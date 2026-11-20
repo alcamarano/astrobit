@@ -39,7 +39,7 @@ erDiagram
         uuid id PK
         uuid user_id FK
         varchar title
-        text description
+        varchar description
         date due_date
         boolean completed
         timestamptz completed_at
@@ -50,7 +50,7 @@ erDiagram
         uuid id PK
         uuid user_id FK
         varchar name
-        text description
+        varchar description
         timestamptz created_at
     }
 
@@ -117,7 +117,7 @@ Tarefas do usuário. Toda tarefa tem uma data.
 | `id` | `uuid` | não | `uuidv7()` | Identificador |
 | `user_id` | `uuid` | não | | Dono da tarefa |
 | `title` | `varchar(150)` | não | | Título |
-| `description` | `text` | sim | | Descrição opcional |
+| `description` | `varchar(300)` | sim | | Descrição opcional, até 300 caracteres |
 | `due_date` | `date` | não | | Data da tarefa |
 | `completed` | `boolean` | não | `false` | Se foi concluída |
 | `completed_at` | `timestamptz` | sim | | Quando foi concluída |
@@ -141,7 +141,7 @@ Hábitos do usuário.
 | `id` | `uuid` | não | `uuidv7()` | Identificador |
 | `user_id` | `uuid` | não | | Dono do hábito |
 | `name` | `varchar(100)` | não | | Nome do hábito |
-| `description` | `text` | sim | | Descrição opcional |
+| `description` | `varchar(300)` | sim | | Descrição opcional, até 300 caracteres |
 | `created_at` | `timestamptz` | não | `now()` | Data de criação |
 
 | Constraint | Tipo | Definição |
