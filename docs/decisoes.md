@@ -18,6 +18,7 @@ Registro das principais escolhas do AstroBit: **o que foi decidido, quais eram a
 | Segurança | [BCrypt para senhas](#bcrypt-para-senhas) |
 | API | [REST no nível 2 de Richardson](#rest-no-nível-2-de-richardson) |
 | API | [Concluir tarefa com PATCH no recurso](#concluir-tarefa-com-patch-no-recurso) |
+| Banco de dados | [PostgreSQL como banco de dados](#postgresql-como-banco-de-dados) |
 | Banco de dados | [Flyway para migrations](#flyway-para-migrations) |
 | Banco de dados | [UUIDv7 como chave primária](#uuidv7-como-chave-primária) |
 | Banco de dados | [Nomes em inglês e com padrão](#nomes-em-inglês-e-com-padrão) |
@@ -108,6 +109,12 @@ Registro das principais escolhas do AstroBit: **o que foi decidido, quais eram a
 - **Por quê:** no REST, a URL nomeia o recurso e o verbo HTTP indica a ação. Alterar um campo do recurso é exatamente o papel do PATCH.
 
 ## Banco de dados
+
+### PostgreSQL como banco de dados
+
+- **Escolha:** PostgreSQL 18, instalado localmente no desenvolvimento e no Neon em produção.
+- **Alternativas:** MySQL (relacional) e MongoDB (não relacional).
+- **Por quê:** os dados do AstroBit são relacionais por natureza (um usuário tem tarefas e hábitos; um hábito tem dias programados e registros), então um banco relacional garante essas ligações com chaves estrangeiras e constraints. Um banco não relacional como o MongoDB deixaria essas garantias para o código. Entre os relacionais, o PostgreSQL é gratuito, de código aberto, robusto e muito usado no mercado; a versão 18 gera UUIDv7 nativamente; e o Neon oferece um plano gratuito permanente, o que permite usar o mesmo banco no desenvolvimento e em produção.
 
 ### Flyway para migrations
 
