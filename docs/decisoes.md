@@ -13,6 +13,8 @@ Registro das principais escolhas do AstroBit: **o que foi decidido, quais eram a
 | Front-end | [Modais para criar e editar](#modais-para-criar-e-editar) |
 | Back-end | [Java e Spring Boot](#java-e-spring-boot) |
 | Back-end | [Oracle JDK 25](#oracle-jdk-25) |
+| Back-end | [Configuração do projeto no Spring Initializr](#configuração-do-projeto-no-spring-initializr) |
+| Back-end | [Pacote base br.com.astrobit](#pacote-base-brcomastrobit) |
 | Back-end | [DTOs em vez de devolver entidades](#dtos-em-vez-de-devolver-entidades) |
 | Segurança | [Variáveis de ambiente para configurações sensíveis](#variáveis-de-ambiente-para-configurações-sensíveis) |
 | Segurança | [JWT para autenticação](#jwt-para-autenticação) |
@@ -77,6 +79,19 @@ Registro das principais escolhas do AstroBit: **o que foi decidido, quais eram a
 - **Alternativas:** Eclipse Temurin, Oracle JDK 21.
 - **Por quê:** versão LTS mais recente, gratuita sob a licença atual da Oracle até setembro de 2028. Em produção, o Java vem da imagem Docker, e o código roda igual.
 
+### Configuração do projeto no Spring Initializr
+
+- **Escolha:** Maven, Spring Boot 4.2.0, empacotamento Jar, configuração em `application.properties` e Java 25.
+- **Dependências:** Spring Web, Spring Data JPA, PostgreSQL Driver, Flyway Migration e Validation. O Spring Security entra quando a autenticação for implementada.
+- **Alternativas:** Gradle no lugar do Maven; War no lugar do Jar; YAML no lugar do Properties.
+- **Por quê:** Maven é o gerenciador mais comum no ecossistema Java. O Jar traz o servidor (Tomcat) embutido e roda direto no Render. Versões `SNAPSHOT` foram evitadas por ainda estarem em desenvolvimento.
+
+### Pacote base br.com.astrobit
+
+- **Escolha:** group `br.com.astrobit`, artifact `astrobit-api` e pacote raiz `br.com.astrobit.api`.
+- **Alternativas:** `com.astrobit` e `io.github.alcamarano`.
+- **Por quê:** o group segue a convenção do domínio invertido (`astrobit.com.br` → `br.com.astrobit`), comum em projetos brasileiros. O pacote raiz não usa hífen porque pacotes Java não aceitam esse caractere.
+
 ### DTOs em vez de devolver entidades
 
 - **Escolha:** a API recebe e devolve objetos próprios (DTOs).
@@ -128,6 +143,7 @@ Registro das principais escolhas do AstroBit: **o que foi decidido, quais eram a
 - **Escolha:** tabelas criadas e alteradas por migrations SQL versionadas.
 - **Alternativa:** deixar o Hibernate criar as tabelas automaticamente.
 - **Por quê:** o banco local e o de produção ficam sempre com a mesma estrutura, e o histórico de mudanças fica no Git, junto com o código.
+- **Papel do Hibernate:** apenas valida (`spring.jpa.hibernate.ddl-auto=validate`). Ele não cria nem altera tabelas; ao iniciar, confere se as entidades Java correspondem às tabelas e, se algo não bater, a aplicação não sobe. O `update` foi descartado porque alteraria o banco sem histórico, e o `none` porque perderia essa conferência.
 
 ### UUIDv7 como chave primária
 
