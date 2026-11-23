@@ -14,6 +14,7 @@ Registro das principais escolhas do AstroBit: **o que foi decidido, quais eram a
 | Back-end | [Java e Spring Boot](#java-e-spring-boot) |
 | Back-end | [Oracle JDK 25](#oracle-jdk-25) |
 | Back-end | [DTOs em vez de devolver entidades](#dtos-em-vez-de-devolver-entidades) |
+| Segurança | [Variáveis de ambiente para configurações sensíveis](#variáveis-de-ambiente-para-configurações-sensíveis) |
 | Segurança | [JWT para autenticação](#jwt-para-autenticação) |
 | Segurança | [BCrypt para senhas](#bcrypt-para-senhas) |
 | API | [REST no nível 2 de Richardson](#rest-no-nível-2-de-richardson) |
@@ -83,6 +84,12 @@ Registro das principais escolhas do AstroBit: **o que foi decidido, quais eram a
 - **Por quê:** evita expor campos internos, como o hash da senha, e separa o formato da API do formato do banco.
 
 ## Segurança
+
+### Variáveis de ambiente para configurações sensíveis
+
+- **Escolha:** senhas, endereços de banco e chaves ficam em variáveis de ambiente; o código só referencia o nome delas (ex.: `${DB_PASSWORD}`).
+- **Alternativa:** escrever os valores direto no `application.properties`.
+- **Por quê:** o repositório é público, e tudo que entra no Git fica no histórico para sempre. Com variáveis de ambiente, o mesmo código roda no computador local e no Render; só mudam os valores, configurados fora do repositório.
 
 ### JWT para autenticação
 
