@@ -117,7 +117,7 @@ astrobit/
 
 Feito por **Augusto Lima Camarano**.
 
-[LinkedIn](https://www.linkedin.com/in/alcamarano/) · [Portfólio](https://github.com/alcamarano)
+[LinkedIn](https://www.linkedin.com/in/alcamarano/) · [GitHub](https://github.com/alcamarano) · [Portfólio](https://alcamarano.github.io/portfolio/)
 
 ---
 
