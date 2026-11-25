@@ -104,7 +104,7 @@ astrobit/
 
 - [x] Definição da stack e planejamento
 - [x] Design das telas (desktop e celular, temas claro e escuro)
-- [ ] Back-end: tarefas
+- [x] Back-end: tarefas
 - [ ] Back-end: usuários, login e JWT
 - [ ] Back-end: hábitos com dias programados
 - [ ] Front-end: telas e navegação
