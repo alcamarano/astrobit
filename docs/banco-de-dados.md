@@ -73,7 +73,7 @@ erDiagram
 | --- | --- | --- |
 | Tabelas | inglês, plural, `snake_case` | `habit_checks` |
 | Colunas | inglês, `snake_case` | `created_at` |
-| Chave primária | `id` do tipo `uuid`, gerado com `uuidv7()` | `id` |
+| Chave primária | `uuid` (UUIDv7), gerado pela aplicação; o `uuidv7()` do banco fica como padrão de reserva | `id` |
 | Chave estrangeira | tabela no singular + `_id` | `user_id` |
 | Primary key | `pk_<tabela>` | `pk_users` |
 | Foreign key | `fk_<tabela>_<referência>` | `fk_tasks_user` |
@@ -111,6 +111,8 @@ Contas de usuário.
 ### tasks
 
 Tarefas do usuário. Toda tarefa tem uma data.
+
+> A coluna `user_id`, a chave estrangeira `fk_tasks_user` e o índice `idx_tasks_user_id` são adicionados junto com a autenticação.
 
 | Coluna | Tipo | Nulo | Padrão | Descrição |
 | --- | --- | :---: | --- | --- |
@@ -204,3 +206,4 @@ Algumas regras dependem de mais de uma tabela ou da data atual, então o banco n
 - Um hábito só pode ser marcado em um **dia programado**.
 - O e-mail é convertido para **minúsculas** antes de salvar, para que `Ana@Email.com` e `ana@email.com` não virem duas contas.
 - Cada usuário só acessa as **próprias** tarefas e hábitos.
+- Descrições vazias ou só com espaços são salvas como `null`, para que "sem descrição" tenha uma única representação.

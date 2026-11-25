@@ -2,7 +2,7 @@
 
 API REST do AstroBit, construída com Java e Spring Boot. Todas as rotas começam com `/api` e trocam dados em **JSON**.
 
-> ⚠️ Os exemplos de requisição e resposta de cada endpoint serão adicionados conforme forem implementados.
+> ⚠️ Os endpoints que ainda não foram implementados aparecem só na tabela; os exemplos são adicionados conforme cada um fica pronto.
 
 ## Sumário
 
@@ -76,6 +76,94 @@ Cada usuário só acessa os **próprios** dados. O usuário é identificado pelo
 | `PATCH` | `/api/tasks/{id}` | Marca ou desmarca como concluída | 🔒 |
 | `DELETE` | `/api/tasks/{id}` | Apaga uma tarefa | 🔒 |
 
+> Por enquanto, as tarefas não pertencem a um usuário. A autenticação (token JWT e o erro `401`) entra quando o cadastro e o login forem implementados.
+
+#### Listar tarefas
+
+`GET /api/tasks?status=all|pending|done` 🔒
+
+| Parâmetro | Valores | Padrão |
+| --- | --- | --- |
+| `status` | `all` (todas), `pending` (pendentes), `done` (concluídas) | `all` |
+
+As tarefas vêm ordenadas pela data (`dueDate`), da mais próxima para a mais distante.
+
+**Resposta `200 OK`**
+
+```json
+[
+  {
+    "id": "019ff097-80cb-7d78-8694-93b9e1a973d2",
+    "title": "Estudar SQL",
+    "description": "Revisar chaves primárias e estrangeiras",
+    "dueDate": "2026-11-20",
+    "completed": false,
+    "completedAt": null,
+    "createdAt": "2026-11-19T14:32:10Z"
+  }
+]
+```
+
+#### Criar tarefa
+
+`POST /api/tasks` 🔒
+
+**Requisição**
+
+```json
+{
+  "title": "Estudar SQL",
+  "description": "Revisar chaves primárias e estrangeiras",
+  "dueDate": "2026-11-20"
+}
+```
+
+| Campo | Obrigatório | Regra |
+| --- | :---: | --- |
+| `title` | sim | até 150 caracteres |
+| `description` | não | até 300 caracteres; vazio é salvo como `null` |
+| `dueDate` | sim | formato `AAAA-MM-DD` |
+
+**Resposta `201 Created`**: a tarefa criada, no mesmo formato da listagem.
+
+**Possíveis erros:** `400` (título vazio, texto acima do limite, data ausente ou em formato inválido).
+
+#### Editar tarefa
+
+`PUT /api/tasks/{id}` 🔒
+
+**Requisição:** os mesmos campos e regras do criar.
+
+**Resposta `200 OK`**: a tarefa atualizada.
+
+**Possíveis erros:** `400` (dados inválidos ou id em formato inválido), `404` (tarefa não encontrada).
+
+#### Concluir ou desmarcar tarefa
+
+`PATCH /api/tasks/{id}` 🔒
+
+**Requisição**
+
+```json
+{
+  "completed": true
+}
+```
+
+Ao concluir, `completedAt` recebe o momento da conclusão. Ao desmarcar (`false`), volta a ser `null`.
+
+**Resposta `200 OK`**: a tarefa atualizada.
+
+**Possíveis erros:** `400` (campo `completed` ausente ou id em formato inválido), `404` (tarefa não encontrada).
+
+#### Apagar tarefa
+
+`DELETE /api/tasks/{id}` 🔒
+
+**Resposta `204 No Content`**: sem corpo.
+
+**Possíveis erros:** `400` (id em formato inválido), `404` (tarefa não encontrada).
+
 ### Hábitos
 
 | Método | Rota | Descrição | |
@@ -123,6 +211,16 @@ Cada usuário só acessa os **próprios** dados. O usuário é identificado pelo
 | `504 Gateway Timeout` | A aplicação demorou demais para responder | Hospedagem (Render) |
 
 ## Tratamento de erros
+
+Todas as respostas de erro seguem o mesmo formato:
+
+```json
+{
+  "status": 404,
+  "message": "Tarefa não encontrada.",
+  "timestamp": "2026-11-25T12:38:18.147Z"
+}
+```
 
 - **4xx** é erro do cliente: o pedido veio errado e pode ser corrigido.
 - **5xx** é erro do servidor: o pedido estava certo, mas algo falhou no back-end.

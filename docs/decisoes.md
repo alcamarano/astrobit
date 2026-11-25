@@ -16,17 +16,20 @@ Registro das principais escolhas do AstroBit: **o que foi decidido, quais eram a
 | Back-end | [Configuração do projeto no Spring Initializr](#configuração-do-projeto-no-spring-initializr) |
 | Back-end | [Pacote base br.com.astrobit](#pacote-base-brcomastrobit) |
 | Back-end | [DTOs em vez de devolver entidades](#dtos-em-vez-de-devolver-entidades) |
+| Back-end | [Data de criação preenchida com @PrePersist](#data-de-criação-preenchida-com-prepersist) |
 | Segurança | [Variáveis de ambiente para configurações sensíveis](#variáveis-de-ambiente-para-configurações-sensíveis) |
 | Segurança | [JWT para autenticação](#jwt-para-autenticação) |
 | Segurança | [BCrypt para senhas](#bcrypt-para-senhas) |
 | API | [REST no nível 2 de Richardson](#rest-no-nível-2-de-richardson) |
 | API | [Concluir tarefa com PATCH no recurso](#concluir-tarefa-com-patch-no-recurso) |
+| API | [Tratamento global de erros](#tratamento-global-de-erros) |
 | Banco de dados | [PostgreSQL como banco de dados](#postgresql-como-banco-de-dados) |
 | Banco de dados | [Flyway para migrations](#flyway-para-migrations) |
 | Banco de dados | [UUIDv7 como chave primária](#uuidv7-como-chave-primária) |
 | Banco de dados | [Nomes em inglês e com padrão](#nomes-em-inglês-e-com-padrão) |
 | Banco de dados | [Exclusão em cascata](#exclusão-em-cascata) |
 | Banco de dados | [Descrição com limite de 300 caracteres](#descrição-com-limite-de-300-caracteres) |
+| Banco de dados | [Texto vazio salvo como null](#texto-vazio-salvo-como-null) |
 | Banco de dados | [Modelagem no ERD Tool do pgAdmin](#modelagem-no-erd-tool-do-pgadmin) |
 | Publicação | [Neon, Render e Vercel](#neon-render-e-vercel) |
 
@@ -98,6 +101,12 @@ Registro das principais escolhas do AstroBit: **o que foi decidido, quais eram a
 - **Alternativa:** expor as entidades JPA diretamente.
 - **Por quê:** evita expor campos internos, como o hash da senha, e separa o formato da API do formato do banco.
 
+### Data de criação preenchida com @PrePersist
+
+- **Escolha:** um método anotado com `@PrePersist` na entidade preenche o `createdAt` com o momento atual, logo antes de salvar uma tarefa nova.
+- **Alternativa:** a anotação `@CreationTimestamp` do Hibernate.
+- **Por quê:** com o `@CreationTimestamp`, a data só era gerada no momento do INSERT, e a resposta da API era montada antes disso, voltando com `createdAt: null` mesmo com o valor gravado no banco. Com o `@PrePersist`, o valor já existe no objeto desde o `save`.
+
 ## Segurança
 
 ### Variáveis de ambiente para configurações sensíveis
@@ -130,6 +139,12 @@ Registro das principais escolhas do AstroBit: **o que foi decidido, quais eram a
 - **Alternativa:** `PATCH /api/tasks/{id}/complete`, com a ação na URL.
 - **Por quê:** no REST, a URL nomeia o recurso e o verbo HTTP indica a ação. Alterar um campo do recurso é exatamente o papel do PATCH.
 
+### Tratamento global de erros
+
+- **Escolha:** uma classe com `@RestControllerAdvice` converte as exceções de todos os controllers em respostas com um formato único (`status`, `message` e `timestamp`).
+- **Alternativa:** tratar os erros em cada controller, ou usar a resposta padrão do Spring.
+- **Por quê:** o front-end sempre sabe onde ler a mensagem, e os códigos ficam corretos: tarefa inexistente responde `404` e dado inválido responde `400`, com as mensagens das validações. Erros inesperados respondem `500` com uma mensagem genérica; o detalhe fica apenas no log do servidor, para não expor informações internas.
+
 ## Banco de dados
 
 ### PostgreSQL como banco de dados
@@ -147,7 +162,7 @@ Registro das principais escolhas do AstroBit: **o que foi decidido, quais eram a
 
 ### UUIDv7 como chave primária
 
-- **Escolha:** todas as tabelas com `id` do tipo `uuid`, gerado pelo PostgreSQL com `uuidv7()`.
+- **Escolha:** todas as tabelas com `id` do tipo `uuid` (UUIDv7), gerado pela aplicação com o `@UuidGenerator` do Hibernate; o `DEFAULT uuidv7()` do banco fica como reserva.
 - **Alternativa:** `BIGINT` sequencial.
 - **Por quê:** os ids aparecem nas URLs da API, e um número sequencial é fácil de adivinhar. O UUIDv7 é ordenado pelo tempo, então mantém os índices eficientes, ao contrário do UUID v4, que é aleatório. O PostgreSQL 18 gera esse tipo nativamente.
 - **Custo:** 16 bytes em vez de 8 e ids menos legíveis na depuração. Irrelevante na escala do projeto.
@@ -168,6 +183,12 @@ Registro das principais escolhas do AstroBit: **o que foi decidido, quais eram a
 - **Escolha:** `description` de tarefas e hábitos como `varchar(300)`, com o mesmo limite no front-end e na validação do back-end.
 - **Alternativa:** `text` sem limite.
 - **Por quê:** sem limite, uma chamada direta à API poderia gravar textos enormes. 300 caracteres comportam com folga uma descrição detalhada. O limite existe nas três camadas: o front orienta o usuário, o back é a proteção principal e o banco é a última barreira.
+
+### Texto vazio salvo como null
+
+- **Escolha:** descrições vazias ou só com espaços são convertidas para `null` antes de salvar.
+- **Alternativa:** salvar o texto como veio.
+- **Por quê:** sem a conversão, "sem descrição" teria duas representações no banco (`null` e `""`), o que complica consultas e comparações. A regra fica em um método auxiliar do service, reutilizável para outros textos opcionais.
 
 ### Modelagem no ERD Tool do pgAdmin
 
