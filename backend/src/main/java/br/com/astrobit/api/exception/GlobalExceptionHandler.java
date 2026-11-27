@@ -17,8 +17,7 @@ import java.time.Instant;
  * Trata as exceções de todos os controllers e as converte em respostas no formato ErrorResponse
  * Para cada exceção, o Spring escolhe o tratador mais específico
  * O de Exception só recebe o que sobrar
-*/
-
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);

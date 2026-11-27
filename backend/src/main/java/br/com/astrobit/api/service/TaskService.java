@@ -16,8 +16,7 @@ import java.util.UUID;
 /**
  * Regras de negócio das tarefas: listagem com filtro, criação, edição, conclusão e exclusão
  * Recebe e devolve DTOs; a entidade não sai daqui
-*/
-
+ */
 @Service
 public class TaskService {
     private final TaskRepository taskRepository;
@@ -30,7 +29,7 @@ public class TaskService {
      * Lista as tarefas ordenadas pela data
      * Filtros: "pending" (pendentes), "done" (concluídas)
      * qualquer outro valor devolve todas
-    */
+     */
     @Transactional(readOnly = true)
     public List<TaskResponse> list(String status) {
         List<Task> tasks = switch (status) {
@@ -58,7 +57,7 @@ public class TaskService {
     /**
      * Edita título, descrição e data de uma tarefa existente
      * Lança TaskNotFoundException (404) se o id não existir
-    */
+     */
     @Transactional
     public TaskResponse update(UUID id, TaskRequest taskRequest) {
         Task task = findTaskById(id);
@@ -93,7 +92,7 @@ public class TaskService {
     /**
      * Apaga uma tarefa
      * Lança TaskNotFoundException (404) se o id não existir
-    */
+     */
     @Transactional
     public void delete(UUID id) {
         Task task = findTaskById(id);

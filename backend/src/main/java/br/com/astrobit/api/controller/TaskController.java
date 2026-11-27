@@ -24,8 +24,7 @@ import java.util.UUID;
 /**
  * Endpoints de tarefas em /api/tasks
  * Apenas recebe as requisições e repassa ao TaskService, as regras de negócio ficam no service
-*/
-
+ */
 @RestController
 @RequestMapping("/api/tasks")
 public class TaskController {
